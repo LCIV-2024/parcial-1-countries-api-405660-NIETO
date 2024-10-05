@@ -68,6 +68,15 @@
             <version>3.1.1</version>
         </dependency>
 
+        <!-- La dep del Circuit Breaker-->
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-spring-boot3</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+
+
+
     </dependencies>
 
     <build>
