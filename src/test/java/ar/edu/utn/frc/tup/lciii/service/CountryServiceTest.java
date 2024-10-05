@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -68,5 +70,73 @@ class CountryServiceTest {
         assertEquals(2, result.size());
         //assertEquals("Country 1", result.get(0).getName());
         //assertEquals("Country 2", result.get(1).getName());
+    }
+
+    @Test
+    public void testGetAllCountriesAsDto() {
+        List<Map<String, Object>> mockResponse = Arrays.asList(
+                createMockCountrys("AR", "Argentina"),
+                createMockCountrys("BR", "Brazil")
+        );
+
+        when(restTemplate.getForObject("https://restcountries.com/v3.1/all", List.class))
+                .thenReturn(mockResponse);
+
+        List<CountryDto> result = countryService.getAllCountriesAsDto();
+
+        assertEquals(2, result.size());
+        assertEquals("Argentina", result.get(0).getName());
+        assertEquals("Brazil", result.get(1).getName());
+    }
+
+    private Map<String, Object> createMockCountrys(String code, String name) {
+        Map<String, Object> country = new HashMap<>();
+        country.put("cca2", code);
+        Map<String, Object> nameMap = new HashMap<>();
+        nameMap.put("common", name);
+        country.put("name", nameMap);
+        return country;
+    }
+
+    @Test
+    void testGetCountriesByCriteria_withName() {
+        List<Map<String, Object>> mockCountries = Arrays.asList(
+                createMockCountry("AR", "Argentina"),
+                createMockCountry("BR", "Brazil"),
+                createMockCountry("CL", "Chile")
+        );
+        when(restTemplate.getForObject("https://restcountries.com/v3.1/all", List.class))
+                .thenReturn(mockCountries);
+
+        List<CountryDto> result = countryService.getCountriesByCriteria(null, "Brazil");
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testGetCountriesByCriteria_noCriteria() {
+        // Arrange
+        List<Map<String, Object>> mockCountries = Arrays.asList(
+                createMockCountry("AR", "Argentina"),
+                createMockCountry("BR", "Brazil"),
+                createMockCountry("CL", "Chile")
+        );
+        when(restTemplate.getForObject("https://restcountries.com/v3.1/all", List.class))
+                .thenReturn(mockCountries);
+
+        // Act
+        List<CountryDto> result = countryService.getCountriesByCriteria(null, null);
+
+        // Assert
+        assertEquals(3, result.size()); // Debería devolver todos los países simulados
+    }
+
+    private Map<String, Object> createMockCountry(String code, String name) {
+        Map<String, Object> country = new HashMap<>();
+        country.put("cca2", code);
+        Map<String, Object> nameMap = new HashMap<>();
+        nameMap.put("common", name);
+        country.put("name", nameMap);
+        return country;
     }
 }

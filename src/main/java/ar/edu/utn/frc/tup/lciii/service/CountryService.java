@@ -49,6 +49,7 @@ public class CountryService {
                         .build();
         }
 
+        // 1
         public List<CountryDto> getAllCountriesAsDto() {
                 String url = "https://restcountries.com/v3.1/all";
                 List<Map<String, Object>> response = restTemplate.getForObject(url, List.class);
